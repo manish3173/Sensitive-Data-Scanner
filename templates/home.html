@@ -1,0 +1,959 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Data Scanner</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --primary: #6366f1;
+        --primary-dark: #4f46e5;
+        --primary-light: #a5b4fc;
+        --secondary: #ec4899;
+        --secondary-dark: #db2777;
+        --accent: #06b6d4;
+        --accent-dark: #0891b2;
+        --success: #10b981;
+        --warning: #f59e0b;
+        --danger: #ef4444;
+        --gray-50: #f8fafc;
+        --gray-100: #f1f5f9;
+        --gray-200: #e2e8f0;
+        --gray-300: #cbd5e1;
+        --gray-400: #94a3b8;
+        --gray-500: #64748b;
+        --gray-600: #475569;
+        --gray-700: #334155;
+        --gray-800: #1e293b;
+        --gray-900: #0f172a;
+        --white: #ffffff;
+        --radius: 1rem;
+        --radius-sm: 0.5rem;
+        --radius-lg: 1.5rem;
+        --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+          0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
+          0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1),
+          0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        --shadow-xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        --transition-fast: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI",
+          sans-serif;
+        line-height: 1.6;
+        color: var(--gray-800);
+        background: linear-gradient(
+          135deg,
+          #667eea 0%,
+          #764ba2 50%,
+          #f093fb 100%
+        );
+        background-attachment: fixed;
+        min-height: 100vh;
+        overflow-x: hidden;
+      }
+
+      body::before {
+        content: "";
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="50" cy="50" r="0.5" fill="white" opacity="0.1"/><circle cx="20" cy="20" r="0.3" fill="white" opacity="0.05"/><circle cx="80" cy="30" r="0.4" fill="white" opacity="0.08"/><circle cx="30" cy="80" r="0.6" fill="white" opacity="0.06"/><circle cx="70" cy="70" r="0.3" fill="white" opacity="0.04"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+        pointer-events: none;
+        z-index: -1;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem;
+      }
+
+      .header {
+        text-align: center;
+        margin-bottom: 3rem;
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        padding: 3rem 2rem;
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-xl);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .header::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          rgba(255, 255, 255, 0.1),
+          transparent
+        );
+        animation: shimmer 3s infinite;
+      }
+
+      @keyframes shimmer {
+        0% {
+          left: -100%;
+        }
+        100% {
+          left: 100%;
+        }
+      }
+
+      .header h1 {
+        font-size: 3.5rem;
+        font-weight: 800;
+        background: linear-gradient(
+          135deg,
+          var(--primary),
+          var(--secondary),
+          var(--accent)
+        );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 1rem;
+        letter-spacing: -0.02em;
+        position: relative;
+        z-index: 1;
+      }
+
+      .header p {
+        color: rgba(255, 255, 255, 0.9);
+        font-size: 1.25rem;
+        font-weight: 500;
+        position: relative;
+        z-index: 1;
+      }
+
+      .nav {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 2rem;
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        padding: 1rem;
+        border-radius: var(--radius);
+        box-shadow: var(--shadow-lg);
+      }
+
+      .nav a {
+        text-decoration: none;
+        color: rgba(255, 255, 255, 0.9);
+        font-weight: 600;
+        padding: 0.875rem 1.75rem;
+        border-radius: var(--radius-sm);
+        transition: var(--transition);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .nav a::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          rgba(255, 255, 255, 0.1),
+          transparent
+        );
+        transition: var(--transition);
+      }
+
+      .nav a:hover::before {
+        left: 100%;
+      }
+
+      .nav a:hover,
+      .nav a.active {
+        background: rgba(255, 255, 255, 0.2);
+        color: var(--white);
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
+      }
+
+      .main-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem;
+        margin-bottom: 2rem;
+      }
+
+      .card {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: var(--radius);
+        padding: 2.5rem;
+        box-shadow: var(--shadow-xl);
+        transition: var(--transition);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background: linear-gradient(
+          90deg,
+          var(--primary),
+          var(--secondary),
+          var(--accent)
+        );
+        opacity: 0;
+        transition: var(--transition);
+      }
+
+      .card:hover::before {
+        opacity: 1;
+      }
+
+      .card:hover {
+        transform: translateY(-8px) scale(1.02);
+        box-shadow: var(--shadow-xl);
+        background: rgba(255, 255, 255, 0.15);
+      }
+
+      .card h2 {
+        color: var(--white);
+        font-size: 1.75rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+        letter-spacing: -0.01em;
+      }
+
+      .card p {
+        color: rgba(255, 255, 255, 0.8);
+        margin-bottom: 2rem;
+        font-size: 1.1rem;
+        line-height: 1.7;
+      }
+
+      .form-group {
+        margin-bottom: 2rem;
+      }
+
+      .form-group label {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        cursor: pointer;
+        transition: var(--transition);
+      }
+
+      .form-group input[type="checkbox"] {
+        width: 1.25rem;
+        height: 1.25rem;
+        accent-color: var(--primary);
+        cursor: pointer;
+      }
+
+      .form-group label:hover {
+        color: var(--white);
+      }
+
+      .form-label {
+        display: block;
+        font-weight: 600;
+        color: rgba(255, 255, 255, 0.9);
+        margin-bottom: 0.75rem;
+        font-size: 0.95rem;
+        letter-spacing: 0.01em;
+      }
+
+      .form-input {
+        width: 100%;
+        padding: 1rem;
+        border: 2px solid rgba(255, 255, 255, 0.2);
+        border-radius: var(--radius-sm);
+        font-size: 1rem;
+        transition: var(--transition);
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        color: var(--white);
+        font-weight: 500;
+      }
+
+      .form-input::placeholder {
+        color: rgba(255, 255, 255, 0.6);
+      }
+
+      .form-input:focus {
+        outline: none;
+        border-color: var(--primary);
+        background: rgba(255, 255, 255, 0.15);
+        box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+        transform: translateY(-1px);
+      }
+
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        padding: 1rem 2rem;
+        font-weight: 600;
+        font-size: 1rem;
+        border: none;
+        border-radius: var(--radius-sm);
+        cursor: pointer;
+        transition: var(--transition);
+        text-decoration: none;
+        position: relative;
+        overflow: hidden;
+        letter-spacing: 0.01em;
+      }
+
+      .btn::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          rgba(255, 255, 255, 0.2),
+          transparent
+        );
+        transition: var(--transition);
+      }
+
+      .btn:hover::before {
+        left: 100%;
+      }
+
+      .btn-primary {
+        background: linear-gradient(
+          135deg,
+          var(--primary),
+          var(--primary-dark)
+        );
+        color: var(--white);
+        box-shadow: var(--shadow-md);
+      }
+
+      .btn-primary:hover {
+        background: linear-gradient(
+          135deg,
+          var(--primary-dark),
+          var(--primary)
+        );
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-lg);
+      }
+
+      .btn-secondary {
+        background: rgba(255, 255, 255, 0.2);
+        color: var(--white);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        backdrop-filter: blur(10px);
+      }
+
+      .btn-secondary:hover {
+        background: rgba(255, 255, 255, 0.3);
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
+      }
+
+      .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+        margin-bottom: 2rem;
+      }
+
+      .stat-card {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        padding: 2rem;
+        border-radius: var(--radius);
+        box-shadow: var(--shadow-lg);
+        text-align: center;
+        transition: var(--transition);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .stat-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background: linear-gradient(
+          90deg,
+          var(--primary),
+          var(--secondary),
+          var(--accent)
+        );
+        transform: scaleX(0);
+        transition: var(--transition);
+      }
+
+      .stat-card:hover::before {
+        transform: scaleX(1);
+      }
+
+      .stat-card:hover {
+        transform: translateY(-4px);
+        background: rgba(255, 255, 255, 0.15);
+      }
+
+      .stat-number {
+        font-size: 2.5rem;
+        font-weight: 800;
+        background: linear-gradient(135deg, var(--primary-light), var(--white));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 0.5rem;
+        letter-spacing: -0.02em;
+      }
+
+      .stat-label {
+        color: rgba(255, 255, 255, 0.8);
+        font-size: 0.95rem;
+        font-weight: 500;
+        letter-spacing: 0.01em;
+      }
+
+      .alert {
+        padding: 1rem;
+        border-radius: var(--radius);
+        margin-bottom: 1rem;
+        border-left: 4px solid;
+      }
+
+      .alert-success {
+        background: rgba(16, 185, 129, 0.1);
+        border-color: var(--success);
+        color: var(--success);
+      }
+
+      .alert-warning {
+        background: rgba(245, 158, 11, 0.1);
+        border-color: var(--warning);
+        color: var(--warning);
+      }
+
+      .alert-danger {
+        background: rgba(239, 68, 68, 0.1);
+        border-color: var(--danger);
+        color: var(--danger);
+      }
+
+      .upload-area {
+        border: 2px dashed rgba(255, 255, 255, 0.3);
+        border-radius: var(--radius);
+        padding: 3rem 2rem;
+        text-align: center;
+        transition: var(--transition);
+        cursor: pointer;
+        background: rgba(255, 255, 255, 0.05);
+        position: relative;
+        overflow: hidden;
+        min-height: 120px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .upload-area.has-file {
+        border-color: var(--success);
+        background: rgba(16, 185, 129, 0.1);
+      }
+
+      .upload-area.has-file p {
+        color: #6ee7b7;
+        font-weight: 600;
+      }
+
+      .upload-area::before {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        background: radial-gradient(
+          circle,
+          rgba(99, 102, 241, 0.2) 0%,
+          transparent 70%
+        );
+        transform: translate(-50%, -50%) scale(0);
+        transition: var(--transition);
+      }
+
+      .upload-area:hover::before {
+        transform: translate(-50%, -50%) scale(3);
+      }
+
+      .upload-area:hover {
+        border-color: var(--primary-light);
+        background: rgba(255, 255, 255, 0.1);
+        transform: scale(1.02);
+      }
+
+      .upload-area.dragover {
+        border-color: var(--primary);
+        background: rgba(99, 102, 241, 0.1);
+        transform: scale(1.05);
+      }
+
+      .upload-area p {
+        color: rgba(255, 255, 255, 0.9);
+        font-weight: 500;
+        position: relative;
+        z-index: 1;
+        margin: 0;
+      }
+
+      .upload-error {
+        color: var(--danger);
+        font-size: 0.875rem;
+        margin-top: 0.5rem;
+        display: none;
+      }
+
+      .recent-scans {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: var(--radius);
+        padding: 2.5rem;
+        box-shadow: var(--shadow-xl);
+      }
+
+      .recent-scans h3 {
+        color: var(--white);
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin-bottom: 1.5rem;
+        letter-spacing: -0.01em;
+      }
+
+      .scan-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1.5rem 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        transition: var(--transition);
+      }
+
+      .scan-item:hover {
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: var(--radius-sm);
+        margin: 0 -1rem;
+        padding-left: 1rem;
+        padding-right: 1rem;
+      }
+
+      .scan-item:last-child {
+        border-bottom: none;
+      }
+
+      .scan-filename {
+        font-weight: 600;
+        color: rgba(255, 255, 255, 0.95);
+        font-size: 1.05rem;
+      }
+
+      .scan-date {
+        color: rgba(255, 255, 255, 0.6);
+        font-size: 0.9rem;
+        font-weight: 500;
+      }
+
+      .risk-badge {
+        padding: 0.5rem 1rem;
+        border-radius: 9999px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        backdrop-filter: blur(10px);
+        letter-spacing: 0.01em;
+      }
+
+      .risk-low {
+        background: rgba(16, 185, 129, 0.2);
+        color: #6ee7b7;
+        border-color: rgba(16, 185, 129, 0.3);
+      }
+
+      .risk-medium {
+        background: rgba(245, 158, 11, 0.2);
+        color: #fcd34d;
+        border-color: rgba(245, 158, 11, 0.3);
+      }
+
+      .risk-high {
+        background: rgba(239, 68, 68, 0.2);
+        color: #fca5a5;
+        border-color: rgba(239, 68, 68, 0.3);
+      }
+
+      .progress-bar {
+        width: 100%;
+        height: 8px;
+        background: var(--gray-200);
+        border-radius: 4px;
+        overflow: hidden;
+        margin: 1rem 0;
+      }
+
+      .progress-fill {
+        height: 100%;
+        background: var(--primary);
+        transition: width 0.3s ease;
+      }
+
+      @media (max-width: 768px) {
+        .container {
+          padding: 1rem;
+        }
+
+        .main-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .nav {
+          flex-direction: column;
+        }
+
+        .header h1 {
+          font-size: 2.5rem;
+        }
+
+        .stats-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .header::before {
+          animation: none;
+        }
+
+        .card {
+          padding: 2rem;
+        }
+
+        .upload-area {
+          padding: 2rem 1rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <header class="header">
+        <h1>Data Scanner</h1>
+        <p>Advanced PII, PHI & PCI Data Detection System</p>
+      </header>
+
+      <nav class="nav">
+        <a href="{{ url_for('zucchini_home') }}" class="active">Home</a>
+        <a href="{{ url_for('squash_list_scans') }}">All Scans</a>
+      </nav>
+
+      {% with messages = get_flashed_messages(with_categories=true) %} {% if
+      messages %} {% for category, message in messages %}
+      <div
+        class="alert alert-{{ 'success' if category == 'success' else 'danger' if category == 'error' else 'warning' }}"
+      >
+        {{ message }}
+      </div>
+      {% endfor %} {% endif %} {% endwith %}
+
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-number">{{ total_scans or 0 }}</div>
+          <div class="stat-label">Total Scans</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">{{ high_risk_scans or 0 }}</div>
+          <div class="stat-label">High Risk Files</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">{{ total_matches or 0 }}</div>
+          <div class="stat-label">Sensitive Data Found</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">{{ avg_risk_score or 0 }}%</div>
+          <div class="stat-label">Average Risk Score</div>
+        </div>
+      </div>
+
+      <div class="main-grid">
+        <div class="card">
+          <h2>Quick File Scan</h2>
+          <p>
+            Upload a file to scan for sensitive data including PII, PHI, and PCI
+            information.
+          </p>
+
+          <form
+            action="{{ url_for('beetroot_upload_file') }}"
+            method="post"
+            enctype="multipart/form-data"
+            id="upload-form"
+          >
+            <div class="form-group">
+              <label for="file" class="form-label">Select File</label>
+              <div class="upload-area" id="upload-area">
+                <p>Drag and drop a file here or click to browse</p>
+              </div>
+              <input
+                type="file"
+                id="file"
+                name="file"
+                class="form-input"
+                style="display: none"
+                required
+                accept=".txt,.pdf,.doc,.docx,.csv,.json,.xml,.html"
+              />
+              <div class="upload-error" id="upload-error">
+                Please select a file before submitting.
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="celery_classification" class="form-label">
+                <input
+                  type="checkbox"
+                  id="celery_classification"
+                  name="celery_classification"
+                  value="true"
+                />
+                Enable ML Classification
+              </label>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Scan File</button>
+          </form>
+        </div>
+
+        <div class="card">
+          <h2>Bulk Text Scan</h2>
+          <p>Scan text content directly without uploading a file.</p>
+
+          <form action="{{ url_for('spinach_scan_text') }}" method="post">
+            <div class="form-group">
+              <label for="pumpkin_text_content" class="form-label"
+                >Text Content</label
+              >
+              <textarea
+                id="pumpkin_text_content"
+                name="pumpkin_text_content"
+                class="form-input"
+                rows="6"
+                placeholder="Paste your text content here..."
+                required
+              ></textarea>
+            </div>
+
+            <div class="form-group">
+              <label for="cabbage_classification" class="form-label">
+                <input
+                  type="checkbox"
+                  id="cabbage_classification"
+                  name="cabbage_classification"
+                  value="true"
+                />
+                Enable ML Classification
+              </label>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Scan Text</button>
+          </form>
+        </div>
+      </div>
+
+      {% if recent_scans %}
+      <div class="recent-scans">
+        <h3>Recent Scans</h3>
+        {% for scan in recent_scans %}
+        <div class="scan-item">
+          <div>
+            <div class="scan-filename">
+              {{ scan.cucumber_filename or 'Text Scan' }}
+            </div>
+            <div class="scan-date">
+              {{ scan.lettuce_scan_timestamp.strftime('%Y-%m-%d %H:%M') }}
+            </div>
+          </div>
+          <div>
+            <span
+              class="risk-badge risk-{{ 'high' if scan.potato_risk_score >= 7 else 'medium' if scan.potato_risk_score >= 4 else 'low' }}"
+            >
+              Risk: {{ "%.1f"|format(scan.potato_risk_score) }}
+            </span>
+            <a
+              href="{{ url_for('kale_view_scan', scan_id=scan.id) }}"
+              class="btn btn-secondary"
+              style="margin-left: 1rem"
+            >
+              View Details
+            </a>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+      {% endif %}
+    </div>
+
+    <script>
+      // File upload drag and drop functionality
+      const uploadArea = document.getElementById("upload-area");
+      const fileInput = document.getElementById("file");
+      const uploadError = document.getElementById("upload-error");
+      let hasFile = false;
+
+      uploadArea.addEventListener("click", () => {
+        fileInput.click();
+      });
+
+      uploadArea.addEventListener("dragover", (e) => {
+        e.preventDefault();
+        uploadArea.classList.add("dragover");
+      });
+
+      uploadArea.addEventListener("dragleave", () => {
+        uploadArea.classList.remove("dragover");
+      });
+
+      uploadArea.addEventListener("drop", (e) => {
+        e.preventDefault();
+        uploadArea.classList.remove("dragover");
+
+        const files = e.dataTransfer.files;
+        if (files.length > 0) {
+          fileInput.files = files;
+          updateUploadArea(files[0]);
+        }
+      });
+
+      fileInput.addEventListener("change", (e) => {
+        if (e.target.files && e.target.files.length > 0) {
+          updateUploadArea(e.target.files[0]);
+        } else {
+          resetUploadArea();
+        }
+
+        // Clear any previous error messages when a file is selected
+        if (e.target.files && e.target.files.length > 0) {
+          uploadError.style.display = "none";
+        }
+      });
+
+      function updateUploadArea(file) {
+        hasFile = true;
+        uploadArea.classList.add("has-file");
+        uploadArea.innerHTML = `<p>✓ Selected: ${file.name}</p>`;
+        uploadError.style.display = "none";
+      }
+
+      function resetUploadArea() {
+        hasFile = false;
+        uploadArea.classList.remove("has-file");
+        uploadArea.innerHTML = `<p>Drag and drop a file here or click to browse</p>`;
+      }
+
+      // Form submission with validation
+      document
+        .getElementById("upload-form")
+        .addEventListener("submit", function (e) {
+          const submitBtn = this.querySelector('button[type="submit"]');
+
+          // Always check the actual file input, not just the hasFile flag
+          if (!fileInput.files || fileInput.files.length === 0) {
+            e.preventDefault();
+            uploadError.style.display = "block";
+            uploadError.textContent = "Please select a file before submitting.";
+
+            // Reset upload area if no file
+            resetUploadArea();
+            return false;
+          }
+
+          // Check file size (10MB limit)
+          const file = fileInput.files[0];
+          const maxSize = 10 * 1024 * 1024; // 10MB
+          if (file.size > maxSize) {
+            e.preventDefault();
+            uploadError.style.display = "block";
+            uploadError.textContent = "File size must be less than 10MB.";
+            return false;
+          }
+
+          // Check file type
+          const allowedTypes = [
+            ".txt",
+            ".pdf",
+            ".doc",
+            ".docx",
+            ".csv",
+            ".json",
+            ".xml",
+            ".html",
+          ];
+          const fileName = file.name.toLowerCase();
+          const hasValidExtension = allowedTypes.some((ext) =>
+            fileName.endsWith(ext)
+          );
+
+          if (!hasValidExtension) {
+            e.preventDefault();
+            uploadError.style.display = "block";
+            uploadError.textContent =
+              "Please select a valid file type (txt, pdf, doc, docx, csv, json, xml, html).";
+            return false;
+          }
+
+          // All validation passed
+          submitBtn.innerHTML = "Scanning...";
+          submitBtn.disabled = true;
+          uploadError.style.display = "none";
+        });
+    </script>
+  </body>
+</html>

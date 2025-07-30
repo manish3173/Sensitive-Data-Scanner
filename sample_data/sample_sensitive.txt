@@ -1,0 +1,20 @@
+John Doe
+Social Security Number: 123-45-6789
+Email: john.doe@example.com
+Phone: (555) 123-4567
+PAN Card: ABCDE1234F
+
+Credit Card Information:
+Visa: 4111111111111111
+CVV: 123
+Expiry: 12/25
+
+Medical Information:
+Patient ID: MRN123456789
+Insurance Policy: INS987654321
+Lab Result: LAB-456789
+Diagnosis Code: A12.345
+
+Banking Details:
+Account Number: 1234567890
+Routing Number: 021000021

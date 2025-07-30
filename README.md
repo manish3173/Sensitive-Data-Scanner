@@ -82,3 +82,7 @@ A comprehensive tool for scanning files to identify PII (Personally Identifiable
 ## License
 
 This project is licensed under the MIT License.
+
+## Contact
+
+For questions or support, please open an issue on GitHub or contact: [manish3173](https://github.com/manish3173)
